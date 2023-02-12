@@ -6,6 +6,7 @@ import { initializeAuth, indexedDBLocalPersistence, inMemoryPersistence } from "
 import { FirebaseAppProvider, AuthProvider } from "reactfire";
 
 import configuration from "../configuration";
+import "antd/dist/reset.css";
 
 function App(props: AppProps) {
   const { Component, pageProps } = props;

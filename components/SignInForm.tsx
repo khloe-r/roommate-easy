@@ -1,5 +1,6 @@
-import { FormEvent, useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useSignInWithEmailAndPassword } from "../lib/hooks/useSignInWithEmailAndPassword";
+import { Button, Checkbox, Form, Input } from "antd";
 
 interface SignInFormProps {
   onSignIn: () => void;
@@ -17,16 +18,13 @@ const SignInForm = (props: SignInFormProps) => {
   }, [props, state.success]);
 
   const onSubmit = useCallback(
-    async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
+    async (values: any) => {
       if (loading) {
         return;
       }
 
-      const data = new FormData(event.currentTarget);
-      const email = data.get("email") as string;
-      const password = data.get("password") as string;
+      const email = values.email as string;
+      const password = values.password as string;
 
       return signIn(email, password);
     },
@@ -35,19 +33,23 @@ const SignInForm = (props: SignInFormProps) => {
   );
 
   return (
-    <form className={"w-full"} onSubmit={onSubmit}>
-      <div className={"flex-col space-y-6"}>
-        <input required placeholder="Your Email" name="email" type="email" className="TextField" />
+    <>
+      <Form name="basic" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} style={{ maxWidth: 600 }} initialValues={{ remember: true }} onFinish={onSubmit} autoComplete="off">
+        <Form.Item label="Email" name="email" rules={[{ required: true, message: "Please input your email!" }]}>
+          <Input />
+        </Form.Item>
 
-        <input required placeholder="Your Password" name="password" type="password" className="TextField" />
+        <Form.Item label="Password" name="password" rules={[{ required: true, message: "Please input your password!" }]}>
+          <Input.Password />
+        </Form.Item>
 
-        {error ? <span className="text-red-500">{error.message}</span> : null}
-
-        <button disabled={loading} className="Button w-full">
-          Sign In
-        </button>
-      </div>
-    </form>
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
+    </>
   );
 };
 

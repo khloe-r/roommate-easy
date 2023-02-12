@@ -1,5 +1,6 @@
 import { FormEvent, useCallback, useEffect } from "react";
 import { useSignUpWithEmailAndPassword } from "../lib/hooks/useSignUpWithEmailAndPassword";
+import { Button } from "antd";
 
 interface SignUpFormProps {
   onSignup: () => void;
@@ -43,9 +44,9 @@ const SignUpForm = (props: SignUpFormProps) => {
 
         {error ? <span className="text-red-500">{error.message}</span> : null}
 
-        <button disabled={loading} className="Button w-full">
+        <Button type="primary" disabled={loading}>
           Sign Up
-        </button>
+        </Button>
       </div>
     </form>
   );
