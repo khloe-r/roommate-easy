@@ -1,12 +1,15 @@
 import AuthorizedPage from "@/components/AuthorizedPage";
-import SignOutButton from "@/components/SignOutButton";
+import Layout from "@/components/Layout";
 import React from "react";
 
 const Dashboard = () => {
   return (
     <AuthorizedPage whenSignedOut="/auth/sign-in">
-      <h1>Welcome</h1>
-      <SignOutButton />
+      <Layout>
+        <>
+          <h1>Welcome</h1>
+        </>
+      </Layout>
     </AuthorizedPage>
   );
 };

@@ -1,6 +1,6 @@
-import { FormEvent, useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useSignUpWithEmailAndPassword } from "../lib/hooks/useSignUpWithEmailAndPassword";
-import { Button } from "antd";
+import { Button, Form, Input, Alert } from "antd";
 
 interface SignUpFormProps {
   onSignup: () => void;
@@ -18,16 +18,13 @@ const SignUpForm = (props: SignUpFormProps) => {
   }, [props, state.success]);
 
   const onSubmit = useCallback(
-    async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
+    async (values: any) => {
       if (loading) {
         return;
       }
 
-      const data = new FormData(event.currentTarget);
-      const email = data.get("email") as string;
-      const password = data.get("password") as string;
+      const email = values.email as string;
+      const password = values.password as string;
 
       return signUp(email, password);
     },
@@ -36,19 +33,25 @@ const SignUpForm = (props: SignUpFormProps) => {
   );
 
   return (
-    <form className={"w-full"} onSubmit={onSubmit}>
-      <div className={"flex-col space-y-6"}>
-        <input required placeholder="Your Email" name="email" type="email" className="TextField" />
+    <>
+      {state.error && <Alert style={{ marginBottom: 8 }} message="Error" description="Invalid Username or Password" type="error" showIcon />}
 
-        <input required placeholder="Your Password" name="password" type="password" className="TextField" />
+      <Form name="basic" layout="vertical" labelCol={{ span: 8 }} wrapperCol={{ span: 24 }} initialValues={{ remember: true }} onFinish={onSubmit} autoComplete="off">
+        <Form.Item label="Email" name="email" rules={[{ required: true, message: "Please input your email!" }]}>
+          <Input />
+        </Form.Item>
 
-        {error ? <span className="text-red-500">{error.message}</span> : null}
+        <Form.Item label="Password" name="password" rules={[{ required: true, message: "Please input your password!" }]}>
+          <Input.Password />
+        </Form.Item>
 
-        <Button type="primary" disabled={loading}>
-          Sign Up
-        </Button>
-      </div>
-    </form>
+        <Form.Item wrapperCol={{ span: 16 }} className="justify-center">
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
+    </>
   );
 };
 

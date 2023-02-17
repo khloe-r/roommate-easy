@@ -6,7 +6,10 @@ import { initializeAuth, indexedDBLocalPersistence, inMemoryPersistence } from "
 import { FirebaseAppProvider, AuthProvider } from "reactfire";
 
 import configuration from "../configuration";
+import { ConfigProvider } from "antd";
+
 import "antd/dist/reset.css";
+import "../styles/globals.css";
 
 function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -20,7 +23,27 @@ function App(props: AppProps) {
   return (
     <FirebaseAppProvider firebaseApp={app}>
       <AuthProvider sdk={auth}>
-        <Component {...pageProps} />
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: "#1C6FFF",
+              fontFamily: "Raleway",
+            },
+            components: {
+              Input: {
+                colorBorder: "#1C6FFF",
+                lineWidth: 2,
+              },
+            },
+          }}
+        >
+          <Component {...pageProps} />
+          <style jsx global>{`
+            #__next {
+              height: 100%;
+            }
+          `}</style>
+        </ConfigProvider>
       </AuthProvider>
     </FirebaseAppProvider>
   );

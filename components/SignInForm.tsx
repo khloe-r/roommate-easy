@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useSignInWithEmailAndPassword } from "../lib/hooks/useSignInWithEmailAndPassword";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Alert, Button, Form, Input } from "antd";
 
 interface SignInFormProps {
   onSignIn: () => void;
@@ -34,7 +34,8 @@ const SignInForm = (props: SignInFormProps) => {
 
   return (
     <>
-      <Form name="basic" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} style={{ maxWidth: 600 }} initialValues={{ remember: true }} onFinish={onSubmit} autoComplete="off">
+      {state.error && <Alert style={{ marginBottom: 8 }} message="Error" description="Invalid Username or Password" type="error" showIcon />}
+      <Form name="basic" layout="vertical" labelCol={{ span: 8 }} wrapperCol={{ span: 24 }} initialValues={{ remember: true }} onFinish={onSubmit} autoComplete="off">
         <Form.Item label="Email" name="email" rules={[{ required: true, message: "Please input your email!" }]}>
           <Input />
         </Form.Item>
@@ -43,9 +44,9 @@ const SignInForm = (props: SignInFormProps) => {
           <Input.Password />
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Form.Item wrapperCol={{ span: 16 }} className="justify-center">
           <Button type="primary" htmlType="submit">
-            Submit
+            Submit {state.error && "error"}
           </Button>
         </Form.Item>
       </Form>

@@ -1,3 +1,4 @@
+import { Button } from "antd";
 import { signOut } from "firebase/auth";
 import { useCallback } from "react";
 import { useAuth } from "reactfire";
@@ -10,9 +11,9 @@ const SignOutButton = () => {
   }, [auth]);
 
   return (
-    <button className="Button" onClick={onSignOutRequested}>
+    <Button type="primary" onClick={onSignOutRequested}>
       Sign Out
-    </button>
+    </Button>
   );
 };
 
