@@ -3,13 +3,14 @@ import { initializeApp } from "firebase/app";
 
 import { initializeAuth, indexedDBLocalPersistence, inMemoryPersistence } from "firebase/auth";
 
-import { FirebaseAppProvider, AuthProvider } from "reactfire";
+import { FirebaseAppProvider, AuthProvider, FirestoreProvider } from "reactfire";
 
 import configuration from "../configuration";
 import { ConfigProvider } from "antd";
 
 import "antd/dist/reset.css";
 import "../styles/globals.css";
+import { initializeFirestore } from "firebase/firestore";
 
 function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -19,31 +20,37 @@ function App(props: AppProps) {
   const persistence = typeof window === "undefined" ? indexedDBLocalPersistence : inMemoryPersistence;
 
   const auth = initializeAuth(app, { persistence });
+  const firestore = initializeFirestore(app, {});
 
   return (
     <FirebaseAppProvider firebaseApp={app}>
       <AuthProvider sdk={auth}>
-        <ConfigProvider
-          theme={{
-            token: {
-              colorPrimary: "#1C6FFF",
-              fontFamily: "Raleway",
-            },
-            components: {
-              Input: {
-                colorBorder: "#1C6FFF",
-                lineWidth: 2,
+        <FirestoreProvider sdk={firestore}>
+          <ConfigProvider
+            theme={{
+              token: {
+                colorPrimary: "#1C6FFF",
+                fontFamily: "Raleway",
               },
-            },
-          }}
-        >
-          <Component {...pageProps} />
-          <style jsx global>{`
-            #__next {
-              height: 100%;
-            }
-          `}</style>
-        </ConfigProvider>
+              components: {
+                Input: {
+                  colorBorder: "#1C6FFF",
+                  lineWidth: 2,
+                },
+                Card: {
+                  lineWidth: 5,
+                },
+              },
+            }}
+          >
+            <Component {...pageProps} />
+            <style jsx global>{`
+              #__next {
+                height: 100%;
+              }
+            `}</style>
+          </ConfigProvider>
+        </FirestoreProvider>
       </AuthProvider>
     </FirebaseAppProvider>
   );

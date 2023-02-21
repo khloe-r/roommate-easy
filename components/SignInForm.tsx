@@ -46,7 +46,7 @@ const SignInForm = (props: SignInFormProps) => {
 
         <Form.Item wrapperCol={{ span: 16 }} className="justify-center">
           <Button type="primary" htmlType="submit">
-            Submit {state.error && "error"}
+            Submit
           </Button>
         </Form.Item>
       </Form>
