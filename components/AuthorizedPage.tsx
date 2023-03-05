@@ -1,3 +1,4 @@
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import React, { useEffect } from "react";
 import { useAuth, useSigninCheck } from "reactfire";
 
@@ -7,7 +8,6 @@ interface AuthorizedPageProps {
 }
 
 const AuthorizedPage = ({ children, whenSignedOut }: AuthorizedPageProps) => {
-  const auth = useAuth();
   const { status } = useSigninCheck();
 
   useEffect(() => {
@@ -15,12 +15,12 @@ const AuthorizedPage = ({ children, whenSignedOut }: AuthorizedPageProps) => {
       return;
     }
 
-    const listener = auth.onAuthStateChanged((user) => {
+    const auth = getAuth();
+    const listener = onAuthStateChanged(auth, (user) => {
       const shouldLogOut = !user && whenSignedOut;
 
       if (shouldLogOut) {
         const path = window.location.pathname;
-
         if (path !== whenSignedOut) {
           window.location.assign(whenSignedOut);
         }
@@ -28,7 +28,7 @@ const AuthorizedPage = ({ children, whenSignedOut }: AuthorizedPageProps) => {
     });
 
     return () => listener();
-  }, [auth, status, whenSignedOut]);
+  }, [status, whenSignedOut]);
 
   return <>{children}</>;
 };
