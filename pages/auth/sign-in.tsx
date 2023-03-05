@@ -26,6 +26,12 @@ const SignIn = () => {
               Sign Up
             </span>
           </Typography>
+          <Typography className="text-center">
+            Forgot password?{" "}
+            <span style={{ fontWeight: 700, cursor: "pointer" }} onClick={() => router.push("/auth/forgot-password")}>
+              Reset Here
+            </span>
+          </Typography>
         </Col>
       </Row>
     </div>
