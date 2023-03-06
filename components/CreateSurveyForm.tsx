@@ -28,7 +28,7 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
     preferenceInfo.map((question) => {
       const q = values[question.title];
       const a = values[`${question.title}-option`] || null;
-      if (q != undefined) {
+      if (q) {
         questions[question.title] = question.opts && a != null ? question.opts[a] : a;
       }
     });

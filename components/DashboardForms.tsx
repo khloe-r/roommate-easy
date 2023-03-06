@@ -31,6 +31,9 @@ const Surveys = ({ data }: { data: any }) => {
                     {survey?.place_info?.spots_available > 1 && "s"}
                   </Typography.Text>
                   <Typography.Text>Date Created: {survey?.created_at?.toDate().toString()}</Typography.Text>
+                  <Button type="primary" onClick={() => router.push(`/survey/${survey.id}`)}>
+                    View Survey
+                  </Button>
                 </Space>
               </Card>
             );

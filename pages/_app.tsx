@@ -37,6 +37,10 @@ function App(props: AppProps) {
                   colorBorder: "#1C6FFF",
                   lineWidth: 2,
                 },
+                Select: {
+                  colorBorder: "#1C6FFF",
+                  lineWidth: 2,
+                },
                 Card: {
                   lineWidth: 5,
                 },
