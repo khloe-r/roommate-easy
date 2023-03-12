@@ -14,26 +14,37 @@ const Surveys = ({ data }: { data: any }) => {
   const surveyQuery = query(surveyCollection, where("__name__", "in", data.surveys));
   const { status: surveysLoading, data: surveys } = useFirestoreCollectionData(surveyQuery, { idField: "id" });
 
+  const handleLongAddress = (str: string) => {
+    return str.length > 20 ? str.substring(0, 17) + "..." : str;
+  };
+
   return (
     <>
-      <Space size={[16, 16]} wrap>
+      <Space style={{ paddingBottom: 50 }} size={[16, 16]} wrap>
         {surveys &&
           surveys.map((survey: any, index: number) => {
             return (
               <Card key={index} style={{ borderColor: "#1C6FFF", maxWidth: 400, minHeight: 300 }}>
                 <Typography.Title className="Hero" style={{ fontWeight: 600 }}>
-                  {survey?.place_info?.address}
+                  {handleLongAddress(survey?.place_info?.address)}
                 </Typography.Title>
                 <Space direction="vertical" size="middle">
-                  <Typography.Text>{survey?.place_info?.timeframe}</Typography.Text>
+                  <Typography.Text>
+                    {survey?.place_info?.timeframe} | ${survey?.place_info?.price} / month
+                  </Typography.Text>
                   <Typography.Text>
                     Looking for {survey?.place_info?.spots_available} {survey?.place_info?.roommates ? "Roommate" : "Sublet"}
                     {survey?.place_info?.spots_available > 1 && "s"}
                   </Typography.Text>
-                  <Typography.Text>Date Created: {survey?.created_at?.toDate().toString()}</Typography.Text>
-                  <Button type="primary" onClick={() => router.push(`/survey/${survey.id}`)}>
-                    View Survey
-                  </Button>
+                  <Typography.Text>Date Created: {survey?.created_at?.toDate().toString().substring(0, 15)}</Typography.Text>
+                  <Space direction="horizontal">
+                    <Button type="primary" onClick={() => router.push(`/survey/${survey.id}`)}>
+                      View Survey
+                    </Button>
+                    <Button type="default" onClick={() => router.push(`/results/${survey.id}`)}>
+                      View Results
+                    </Button>
+                  </Space>
                 </Space>
               </Card>
             );

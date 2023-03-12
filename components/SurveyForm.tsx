@@ -1,6 +1,7 @@
 import { preferenceInfo, SchoolList } from "@/constants";
+import { SurveyType } from "@/types/survey.types";
 import { Row, Col, Typography, Result, Button, Card, Space, Form, Input, Select, Radio, Modal, Alert } from "antd";
-import { addDoc, arrayUnion, collection, doc, query, updateDoc, where } from "firebase/firestore";
+import { addDoc, arrayUnion, collection, doc, query, Timestamp, updateDoc, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useFirestore, useFirestoreCollectionData } from "reactfire";
@@ -8,7 +9,7 @@ import { useFirestore, useFirestoreCollectionData } from "reactfire";
 const SurveyForm = ({ id }: { id: string }) => {
   const router = useRouter();
   const firestore = useFirestore();
-  const [survey, setSurvey] = useState<any>(null);
+  const [survey, setSurvey] = useState<SurveyType>({} as SurveyType);
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<string>("");
 
@@ -18,7 +19,7 @@ const SurveyForm = ({ id }: { id: string }) => {
 
   useEffect(() => {
     if (surveys && surveys.length > 0) {
-      setSurvey(surveys[0]);
+      setSurvey(surveys[0] as SurveyType);
     }
   }, [survey, surveys]);
 
@@ -38,8 +39,8 @@ const SurveyForm = ({ id }: { id: string }) => {
         }
       });
       if ("Additional Questions" in survey.questions) {
-        answers["Additional Questions"] = survey.questions["Additional Questions"].split(",").map((_: string, index: number) => {
-          return values[`Additional-Questions-${index}`];
+        answers["Additional Questions"] = (survey.questions["Additional Questions"] as string).split(",").map((_: string, index: number) => {
+          return values[`Additional-Questions-${index}`] || null;
         });
       }
 
@@ -48,6 +49,7 @@ const SurveyForm = ({ id }: { id: string }) => {
           contact_info,
           answers,
           survey_id: id,
+          timestamp: new Date(),
         });
 
         await updateDoc(doc(firestore, "surveys", id), {
@@ -61,8 +63,13 @@ const SurveyForm = ({ id }: { id: string }) => {
       setLoading(false);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [survey]
   );
+
+  const handleFinish = () => {
+    setStatus("");
+    router.push("/");
+  };
 
   const personalInfo: string[] = ["Name", "Primary Contact Info", "Secondary Contact Info"];
 
@@ -70,15 +77,15 @@ const SurveyForm = ({ id }: { id: string }) => {
     <div className="h-full">
       <Modal
         title=""
-        open={!status.includes("Success")}
-        onOk={() => router.push("/dashboard")}
-        onCancel={() => router.push("/dashboard")}
+        open={status.includes("Success")}
+        onOk={handleFinish}
+        onCancel={handleFinish}
         footer={[
           <>
-            <Button type="text" onClick={() => router.push("/")}>
+            <Button type="text" onClick={handleFinish}>
               Back to Home
             </Button>
-            <Button type="primary" onClick={() => router.push("/")}>
+            <Button type="primary" onClick={handleFinish}>
               Learn More
             </Button>
           </>,
@@ -115,10 +122,12 @@ const SurveyForm = ({ id }: { id: string }) => {
                 {survey?.place_info?.address}
               </Typography.Title>
               <Space direction="vertical" size="middle">
-                <Typography.Text>{survey?.place_info?.timeframe}</Typography.Text>
+                <Typography.Text>
+                  {survey?.place_info?.timeframe} | ${survey?.place_info?.price} / month
+                </Typography.Text>
                 <Typography.Text>
                   Looking for {survey?.place_info?.spots_available} {survey?.place_info?.roommates ? "Roommate" : "Sublet"}
-                  {survey?.place_info?.spots_available > 1 && "s"}
+                  {survey?.place_info?.spots_available != "1" && "s"}
                 </Typography.Text>
                 <Typography.Text>Date Created: {survey?.created_at?.toDate().toString()}</Typography.Text>
               </Space>
@@ -136,7 +145,7 @@ const SurveyForm = ({ id }: { id: string }) => {
                 </Form.Item>
               ))}
               {preferenceInfo.map((question, index) => {
-                if (survey && question.title in survey.questions) {
+                if (survey && survey.questions && question.title in survey.questions) {
                   return (
                     <>
                       {question.title == "Additional Questions" ? (
@@ -144,7 +153,7 @@ const SurveyForm = ({ id }: { id: string }) => {
                           <Typography.Title className="Hero" style={{ fontWeight: 600, fontSize: "large" }}>
                             Additional Questions
                           </Typography.Title>
-                          {survey.questions["Additional Questions"].split(",").map((question: string, additionalIndex: number) => {
+                          {(survey.questions[question.title] as string).split(",").map((question: string, additionalIndex: number) => {
                             return (
                               <Form.Item key={additionalIndex} label={<label style={{ fontWeight: 600 }}>{question}</label>} name={`Additional-Questions-${additionalIndex}`}>
                                 <Input />

@@ -1,7 +1,7 @@
 import { AppProps } from "next/app";
 import { initializeApp } from "firebase/app";
 
-import { initializeAuth, browserLocalPersistence } from "firebase/auth";
+import { initializeAuth, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
 
 import { FirebaseAppProvider, AuthProvider, FirestoreProvider } from "reactfire";
 
@@ -17,7 +17,7 @@ function App(props: AppProps) {
 
   const app = initializeApp(configuration.firebase);
 
-  const persistence = browserLocalPersistence;
+  const persistence = browserSessionPersistence;
 
   const auth = initializeAuth(app, { persistence });
   const firestore = initializeFirestore(app, {});

@@ -74,7 +74,7 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
       </Typography.Title>
       <Form name="basic" layout="vertical" labelCol={{ span: 8 }} wrapperCol={{ span: 24 }} initialValues={{ remember: true }} onFinish={onSubmit} autoComplete="off">
         {propertyInfo.map((name, index) => (
-          <Form.Item key={index} label={name} name={name.toLowerCase()} rules={[{ required: true, message: `Please input your ${name.toLowerCase()}!` }]}>
+          <Form.Item key={index} label={`${name === "Price" ? "Price per month" : name}`} name={name.toLowerCase()} rules={[{ required: true, message: `Please input your ${name.toLowerCase()}!` }]}>
             <Input />
           </Form.Item>
         ))}
