@@ -1,10 +1,11 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/router";
-import { Typography, Form, Input, Space, Radio, Switch, Button, Select, Alert, Modal } from "antd";
+import { Typography, Form, Input, Space, Radio, Switch, Button, Select, Alert, Modal, Checkbox } from "antd";
 import { useFirestore } from "reactfire";
 import { addDoc, arrayUnion, collection, doc, updateDoc } from "firebase/firestore";
 import Link from "next/link";
 import { preferenceInfo, SchoolList } from "@/constants";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
 export const CreateSurveyForm = ({ userId }: { userId: string }) => {
   const router = useRouter();
@@ -15,8 +16,20 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
   const propertyInfo: string[] = ["Address", "Price", "Timeframe"];
   const firestore = useFirestore();
 
+  const formItemLayout = {
+    labelCol: {
+      xs: { span: 24 },
+      sm: { span: 4 },
+    },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 20 },
+    },
+  };
+
   const onSubmit = useCallback(async (values: any) => {
     setLoading(true);
+    console.log(values);
     const place_info = {
       address: values.address,
       roommates: values.roommates,
@@ -33,6 +46,19 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
       }
     });
 
+    if (values["Additional Questions"]) {
+      questions["Additional Questions"] = values[`Additional Questions-option`].join(",") || null;
+    }
+
+    console.log({
+      place_info,
+      questions,
+      responses: [],
+      user_id: userId,
+      created_at: new Date(),
+      public: values.public,
+    });
+
     try {
       const docRef = await addDoc(collection(firestore, "surveys"), {
         place_info,
@@ -40,6 +66,7 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
         responses: [],
         user_id: userId,
         created_at: new Date(),
+        public: values.public,
       });
 
       await updateDoc(doc(firestore, "users", userId), {
@@ -61,7 +88,7 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
         </Typography.Title>
         <Typography.Text>Your survey has been created! Share it with potential candidates using this link:</Typography.Text>
         <Typography.Title className="Hero" style={{ fontWeight: 500, marginTop: 0, fontSize: 30 }}>
-          <Link href={`localhost:3000/survey/${status.split(":")[1]}`} target="_blank">
+          <Link onClick={() => router.push(`/survey/${status.split(":")[1]}`)} target="_blank">
             roommate-easy.web.app/survey/{status.split(":")[1]}
           </Link>
         </Typography.Title>
@@ -135,6 +162,69 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
               </Form.Item>
             </Space>
           ))}
+          <Space align="baseline">
+            <Form.Item name="Additional Questions" valuePropName="checked" style={{ marginBottom: "10px" }}>
+              <Switch />
+            </Form.Item>
+            Additional Questions
+          </Space>
+          <Form.List name="Additional Questions-option">
+            {(fields, { add, remove }, { errors }) => (
+              <>
+                {fields.map((field, index) => (
+                  <Form.Item {...formItemLayout} required={false} key={field.key}>
+                    <Form.Item
+                      {...field}
+                      validateTrigger={["onChange", "onBlur"]}
+                      rules={[
+                        {
+                          required: true,
+                          whitespace: true,
+                          message: "Please input additional question or delete this field.",
+                        },
+                      ]}
+                      noStyle
+                    >
+                      <Input placeholder="Additional question?" style={{ width: "60%" }} />
+                    </Form.Item>
+                    {fields.length > 1 ? <MinusCircleOutlined className="dynamic-delete-button" onClick={() => remove(field.name)} /> : null}
+                  </Form.Item>
+                ))}
+                <Form.Item>
+                  <Button type="dashed" onClick={() => add()} style={{ width: "60%" }} icon={<PlusOutlined />}>
+                    Add question
+                  </Button>
+                  <Form.ErrorList errors={errors} />
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+          <Typography.Title className="Hero" style={{ fontWeight: 600, color: "#AFAFAF", fontSize: "large" }}>
+            Visibility
+          </Typography.Title>
+          <Typography.Text>By marking this survey as public it may be shown with other public surveys on the Roommate Easy website. Otherwise, it will only be reachable through your unique survey link created after submission.</Typography.Text>
+          <Space align="baseline">
+            <Form.Item name="public" valuePropName="checked" style={{ marginBottom: "10px" }}>
+              <Switch />
+            </Form.Item>{" "}
+            Yes, my survey can be shown publically on the Roommate Easy website
+          </Space>
+          <Space align="baseline">
+            <Form.Item
+              name="terms_and_conditions"
+              valuePropName="checked"
+              style={{ marginBottom: "10px" }}
+              rules={[
+                {
+                  validator: (_, value) => (value ? Promise.resolve() : Promise.reject(new Error("You must agree to the terms and conditions"))),
+                },
+              ]}
+            >
+              <Checkbox />
+            </Form.Item>
+            I agree to the terms and conditions
+          </Space>
+
           <Button type="primary" htmlType="submit" disabled={loading}>
             Submit
           </Button>

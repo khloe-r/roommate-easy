@@ -9,5 +9,5 @@ export const preferenceInfo = [
     { formattedTitle: "Please select which best describes your preferences arond pets", title: "Pets", opts: ["Yes, I have pets", "No, I don't have pets and don't want pets in the unit", "No, I don't have pets but are okay with pets in the unit"] },
     { formattedTitle: "Please select which best describes how often you may have a partner over", title: "Relationship", opts: ["Yes, I have a partner who will visit often", "Yes, I have a partner who will visit occaisionally", "No, I don't have a partner who will be visiting"] },
     { formattedTitle: "Please select which best describes your sleeping habits", title: "Sleeping Habits", opts: ["I usually sleep before 10 pm", "I usually sleep between 10 pm and 2 am", "I usually sleep after 2 am"] },
-    { title: "Additional Questions", formType: "textarea", description: "Enter any additional questions separated by commas you would like included" },
+    // { title: "Additional Questions", formType: "textarea", description: "Enter any additional questions separated by commas you would like included" },
 ];

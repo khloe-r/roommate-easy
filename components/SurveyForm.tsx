@@ -191,6 +191,20 @@ const SurveyForm = ({ id }: { id: string }) => {
                   );
                 }
               })}
+              {"Additional Questions" in survey.questions && (
+                <>
+                  <Typography.Title className="Hero" style={{ fontWeight: 600, fontSize: "large" }}>
+                    Additional Questions
+                  </Typography.Title>
+                  {(survey.questions["Additional Questions"] as string).split(",").map((question: string, additionalIndex: number) => {
+                    return (
+                      <Form.Item key={additionalIndex} label={<label style={{ fontWeight: 600 }}>{question}</label>} name={`Additional-Questions-${additionalIndex}`}>
+                        <Input />
+                      </Form.Item>
+                    );
+                  })}
+                </>
+              )}
               <Form.Item wrapperCol={{ span: 16 }} className="justify-center">
                 <Button type="primary" htmlType="submit" disabled={loading}>
                   Submit
