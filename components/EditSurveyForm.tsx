@@ -1,20 +1,67 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Typography, Form, Input, Space, Radio, Switch, Button, Select, Alert, Modal, Checkbox } from "antd";
-import { useFirestore } from "reactfire";
-import { addDoc, arrayUnion, collection, doc, updateDoc } from "firebase/firestore";
+import { useFirestore, useFirestoreCollectionData } from "reactfire";
+import { addDoc, arrayUnion, collection, doc, query, updateDoc, where } from "firebase/firestore";
 import Link from "next/link";
 import { preferenceInfo, SchoolList } from "@/constants";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
-export const CreateSurveyForm = ({ userId }: { userId: string }) => {
+export const EditSurveyForm = ({ userId, surveyId }: { userId: string; surveyId: string }) => {
   const router = useRouter();
+
+  const [survey, setSurvey] = useState<any>();
+  const [initialValueObj, setInitialValueObj] = useState<any>();
 
   const [status, setStatus] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   const propertyInfo: string[] = ["Address", "Price", "Timeframe"];
   const firestore = useFirestore();
+
+  const surveyCollection = collection(firestore, "surveys");
+  const surveyQuery = query(surveyCollection, where("__name__", "==", surveyId));
+  const { status: surveysLoading, data: surveys } = useFirestoreCollectionData(surveyQuery, { idField: "id" });
+
+  useEffect(() => {
+    if (surveys && surveys.length > 0) {
+      if (userId && surveys[0].user_id == userId) {
+        console.log(surveys[0]);
+        setSurvey(surveys[0]);
+        const rentalInfo: any = {
+          address: surveys[0].place_info.address,
+          price: surveys[0].place_info.price,
+          roommates: surveys[0].place_info.roommates,
+          timeframe: surveys[0].place_info.timeframe,
+          spots_available: surveys[0].place_info.spots_available,
+          public: surveys[0].public,
+          terms_and_conditions: true,
+        };
+        preferenceInfo.map((pref) => {
+          if (pref.title in surveys[0].questions) {
+            rentalInfo[pref.title] = true;
+            if (surveys[0].questions[pref.title] && pref.opts) {
+              console.log(pref.title, pref.opts.indexOf(surveys[0].questions[pref.title]));
+              rentalInfo[`${pref.title}-option`] = pref.opts.indexOf(surveys[0].questions[pref.title]);
+            } else if (surveys[0].questions[pref.title]) {
+              rentalInfo[`${pref.title}-option`] = surveys[0].questions[pref.title];
+            }
+          }
+        });
+        if ("Additional Questions" in surveys[0].questions) {
+          rentalInfo["Additional Questions-option"] = surveys[0].questions["Additional Questions"].split(",");
+        }
+        console.log(rentalInfo);
+        setInitialValueObj(rentalInfo);
+      } else {
+        setSurvey(null);
+      }
+    }
+  }, [survey, surveys, userId, surveyId]);
+
+  const [form] = Form.useForm();
+
+  useEffect(() => form.resetFields(), [initialValueObj]);
 
   const formItemLayout = {
     labelCol: {
@@ -42,7 +89,8 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
       const q = values[question.title];
       const a = values[`${question.title}-option`] || null;
       if (q) {
-        questions[question.title] = question.opts && a != null ? question.opts[a] : a;
+        console.log(a);
+        questions[question.title] = question.opts && a != null ? question.opts[Number(a)] : a;
       }
     });
 
@@ -56,23 +104,16 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
       responses: [],
       user_id: userId,
       created_at: new Date(),
-      public: values.public || false,
+      public: values.public,
     });
 
     try {
-      const docRef = await addDoc(collection(firestore, "surveys"), {
+      await updateDoc(doc(firestore, "surveys", surveyId), {
         place_info,
         questions,
-        responses: [],
-        user_id: userId,
-        created_at: new Date(),
         public: values.public || false,
       });
-
-      await updateDoc(doc(firestore, "users", userId), {
-        surveys: arrayUnion(docRef.id),
-      });
-      setStatus(`Success:${docRef.id}`);
+      setStatus("Success");
     } catch (error) {
       console.log(error);
       setStatus("Error");
@@ -86,7 +127,7 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
         <Typography.Title className="Hero" style={{ fontWeight: 700 }}>
           WOOHOO!
         </Typography.Title>
-        <Typography.Text>Your survey has been created! Share it with potential candidates using this link:</Typography.Text>
+        <Typography.Text>Your survey has been updated! Share it with potential candidates using this link:</Typography.Text>
         <Typography.Title className="Hero" style={{ fontWeight: 500, marginTop: 0, fontSize: 30 }}>
           <Link href="" onClick={() => router.push(`/survey/${status.split(":")[1]}`)} target="_blank">
             roommate-easy.web.app/survey/{status.split(":")[1]}
@@ -94,12 +135,12 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
         </Typography.Title>
       </Modal>
       <Typography.Title className="Hero" style={{ fontWeight: 700 }}>
-        CREATE YOUR SURVEY
+        EDIT YOUR SURVEY
       </Typography.Title>
       <Typography.Title className="Hero" style={{ fontWeight: 600, color: "#AFAFAF", fontSize: "large" }}>
         Property Info
       </Typography.Title>
-      <Form name="basic" layout="vertical" labelCol={{ span: 8 }} wrapperCol={{ span: 24 }} initialValues={{ remember: true }} onFinish={onSubmit} autoComplete="off">
+      <Form form={form} name="basic" layout="vertical" labelCol={{ span: 8 }} wrapperCol={{ span: 24 }} initialValues={initialValueObj} onFinish={onSubmit} autoComplete="off">
         {propertyInfo.map((name, index) => (
           <Form.Item key={index} label={`${name === "Price" ? "Price per month" : name}`} name={name.toLowerCase()} rules={[{ required: true, message: `Please input your ${name.toLowerCase()}!` }]}>
             <Input />
@@ -140,17 +181,15 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
               {preference.description && <Typography.Text>{preference.description}</Typography.Text>}
               <Form.Item name={`${preference.title}-option`}>
                 {preference.opts ? (
-                  <>
-                    <Radio.Group>
-                      <Space direction="vertical">
-                        {preference.opts.map((opt, index) => (
-                          <Radio key={index} value={index}>
-                            {opt}
-                          </Radio>
-                        ))}
-                      </Space>
-                    </Radio.Group>
-                  </>
+                  <Radio.Group>
+                    <Space direction="vertical">
+                      {preference.opts.map((opt, index) => (
+                        <Radio key={index} value={index}>
+                          {opt}
+                        </Radio>
+                      ))}
+                    </Space>
+                  </Radio.Group>
                 ) : preference.formType != "autocomplete" ? (
                   <Input type={preference.formType} />
                 ) : (

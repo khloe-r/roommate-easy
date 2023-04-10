@@ -83,13 +83,14 @@ const Responses = ({ responses, answerKey }: { responses: string[]; answerKey: {
                         <Typography.Text>{answer.answer || "No response"}</Typography.Text>
                       ) : (
                         <>
-                          {(answerKey[answer.question] as string).split(",").map((addQ, index) => (
-                            <>
-                              <Typography.Text>
-                                {addQ} {answer.answer[index]}
-                              </Typography.Text>
-                            </>
-                          ))}
+                          {answerKey[answer.question] &&
+                            (answerKey[answer.question] as string).split(",").map((addQ, index) => (
+                              <>
+                                <Typography.Text>
+                                  {addQ} {answer.answer[index]}
+                                </Typography.Text>
+                              </>
+                            ))}
                         </>
                       )}
                     </Space>

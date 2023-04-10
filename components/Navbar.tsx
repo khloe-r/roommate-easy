@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout } from "antd";
+import { Button, Layout, Space } from "antd";
 import Image from "next/image";
 import SignOutButton from "./SignOutButton";
 import { useRouter } from "next/router";
@@ -14,7 +14,10 @@ export const Navbar = () => {
     <Layout className="layout">
       <Header style={{ backgroundColor: "#fff", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Image alt="Roommate Easy Logo" src={"/logo.png"} width="200" height="30" onClick={() => router.push("/dashboard")} />
-        {user && <SignOutButton />}
+        <Space>
+          {user && <SignOutButton />}
+          {user && <Button onClick={() => router.push("/account")}>Account Settings</Button>}
+        </Space>
       </Header>
     </Layout>
   );

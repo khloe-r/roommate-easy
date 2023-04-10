@@ -41,6 +41,9 @@ const Surveys = ({ data }: { data: any }) => {
                     <Button type="primary" onClick={() => router.push(`/survey/${survey.id}`)}>
                       View Survey
                     </Button>
+                    <Button type="default" onClick={() => router.push(`/edit-survey/${survey.id}`)}>
+                      Edit Survey
+                    </Button>
                     <Button type="default" onClick={() => router.push(`/results/${survey.id}`)}>
                       View Results
                     </Button>

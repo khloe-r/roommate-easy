@@ -191,7 +191,7 @@ const SurveyForm = ({ id }: { id: string }) => {
                   );
                 }
               })}
-              {"Additional Questions" in survey.questions && (
+              {survey?.questions && "Additional Questions" in survey?.questions && (
                 <>
                   <Typography.Title className="Hero" style={{ fontWeight: 600, fontSize: "large" }}>
                     Additional Questions
