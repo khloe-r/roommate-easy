@@ -6,12 +6,11 @@ import { doc } from "firebase/firestore";
 import { useFirestore } from "reactfire";
 import { Space, Spin, Typography } from "antd";
 import { DashboardForms } from "@/components/DashboardForms";
+import AccountSettings from "@/components/AccountSettings";
 
 const Dashboard = () => {
   const { status: loadingUser, data: user } = useUser();
   const firestore = useFirestore();
-
-  const userRef = doc(firestore, "users", user?.uid || "default");
 
   console.log(user);
 
@@ -22,6 +21,7 @@ const Dashboard = () => {
           <Typography.Title className="Hero" style={{ fontWeight: 700 }}>
             YOUR ACCOUNT
           </Typography.Title>
+          {user && <AccountSettings userId={user?.uid} email={user?.email || ""} />}
         </div>
       </Layout>
     </AuthorizedPage>

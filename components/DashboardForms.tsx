@@ -11,7 +11,7 @@ const Surveys = ({ data }: { data: any }) => {
   const router = useRouter();
 
   const surveyCollection = collection(firestore, "surveys");
-  const surveyQuery = query(surveyCollection, where("__name__", "in", data.surveys));
+  const surveyQuery = query(surveyCollection, where("__name__", "in", !data.surveys || data.surveys.length === 0 ? ["default"] : data.surveys));
   const { status: surveysLoading, data: surveys } = useFirestoreCollectionData(surveyQuery, { idField: "id" });
 
   const handleLongAddress = (str: string) => {
