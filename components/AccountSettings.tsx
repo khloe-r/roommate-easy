@@ -30,7 +30,6 @@ const MyAccountData = ({ data, email, userId }: { data: any; email: string; user
   const [status, setStatus] = useState<string>("");
 
   const onSubmit = useCallback(async (values: any) => {
-    console.log(values);
     if (values.password != values.password_confirm) {
       setStatus("Error: Passwords don't match");
     } else {

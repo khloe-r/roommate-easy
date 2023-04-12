@@ -50,15 +50,6 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
       questions["Additional Questions"] = values[`Additional Questions-option`].join(",") || null;
     }
 
-    console.log({
-      place_info,
-      questions,
-      responses: [],
-      user_id: userId,
-      created_at: new Date(),
-      public: values.public || false,
-    });
-
     try {
       const docRef = await addDoc(collection(firestore, "surveys"), {
         place_info,
@@ -87,10 +78,8 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
           WOOHOO!
         </Typography.Title>
         <Typography.Text>Your survey has been created! Share it with potential candidates using this link:</Typography.Text>
-        <Typography.Title className="Hero" style={{ fontWeight: 500, marginTop: 0, fontSize: 30 }}>
-          <Link href="" onClick={() => router.push(`/survey/${status.split(":")[1]}`)} target="_blank">
-            roommate-easy.web.app/survey/{status.split(":")[1]}
-          </Link>
+        <Typography.Title onClick={() => router.push(`/survey/${status.split(":")[1]}`)} className="Hero" style={{ cursor: "pointer", fontWeight: 500, marginTop: 0, fontSize: 30, color: "#1D6FFF" }}>
+          roommate-easy.web.app/survey/{status.split(":")[1]}
         </Typography.Title>
       </Modal>
       <Typography.Title className="Hero" style={{ fontWeight: 700 }}>

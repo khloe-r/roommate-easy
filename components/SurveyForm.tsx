@@ -108,7 +108,19 @@ const SurveyForm = ({ id }: { id: string }) => {
           }
         />
       )}
-      {surveys?.length == 1 && survey && (
+      {surveys?.length == 1 && survey && survey.archived && (
+        <Result
+          status="404"
+          title="404"
+          subTitle="Sorry, this survey has been closed."
+          extra={
+            <Button type="primary" onClick={() => router.push("/")}>
+              Back Home
+            </Button>
+          }
+        />
+      )}
+      {surveys?.length == 1 && survey && !survey.archived && (
         <Row justify="center" align="middle" className="h-full">
           <Col span={12}>
             <Typography.Title className="Hero text-center" style={{ fontWeight: 700 }}>

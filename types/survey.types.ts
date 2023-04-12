@@ -12,4 +12,5 @@ export interface SurveyType {
     questions: { [key: string]: string | string[] };
     responses: string[];
     user_id: string;
+    archived?: boolean;
 }

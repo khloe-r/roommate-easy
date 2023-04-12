@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useFirestoreCollectionData, useUser } from "reactfire";
-import { collection, DocumentData, DocumentReference, query, setDoc, where } from "firebase/firestore";
+import { collection, doc, DocumentData, DocumentReference, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { useFirestoreDocData, useFirestore } from "reactfire";
 import { Typography, Form, Button, Input, Card, Space, Spin } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
@@ -16,6 +16,12 @@ const Surveys = ({ data }: { data: any }) => {
 
   const handleLongAddress = (str: string) => {
     return str.length > 20 ? str.substring(0, 17) + "..." : str;
+  };
+
+  const handleArchiveSurvey = (id: string, status?: boolean) => {
+    updateDoc(doc(firestore, "surveys", id), {
+      archived: !status,
+    });
   };
 
   return (
@@ -37,7 +43,7 @@ const Surveys = ({ data }: { data: any }) => {
                     {survey?.place_info?.spots_available > 1 && "s"}
                   </Typography.Text>
                   <Typography.Text>Date Created: {survey?.created_at?.toDate().toString().substring(0, 15)}</Typography.Text>
-                  <Space direction="horizontal">
+                  <Space direction="horizontal" wrap>
                     <Button type="primary" onClick={() => router.push(`/survey/${survey.id}`)}>
                       View Survey
                     </Button>
@@ -46,6 +52,9 @@ const Surveys = ({ data }: { data: any }) => {
                     </Button>
                     <Button type="default" onClick={() => router.push(`/results/${survey.id}`)}>
                       View Results
+                    </Button>
+                    <Button type="default" onClick={() => handleArchiveSurvey(survey.id, survey.archived)}>
+                      {survey.archived ? "Unarchive Survey" : "Archive Survey"}
                     </Button>
                   </Space>
                 </Space>

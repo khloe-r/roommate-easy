@@ -26,7 +26,6 @@ export const EditSurveyForm = ({ userId, surveyId }: { userId: string; surveyId:
   useEffect(() => {
     if (surveys && surveys.length > 0) {
       if (userId && surveys[0].user_id == userId) {
-        console.log(surveys[0]);
         setSurvey(surveys[0]);
         const rentalInfo: any = {
           address: surveys[0].place_info.address,
@@ -41,7 +40,6 @@ export const EditSurveyForm = ({ userId, surveyId }: { userId: string; surveyId:
           if (pref.title in surveys[0].questions) {
             rentalInfo[pref.title] = true;
             if (surveys[0].questions[pref.title] && pref.opts) {
-              console.log(pref.title, pref.opts.indexOf(surveys[0].questions[pref.title]));
               rentalInfo[`${pref.title}-option`] = pref.opts.indexOf(surveys[0].questions[pref.title]);
             } else if (surveys[0].questions[pref.title]) {
               rentalInfo[`${pref.title}-option`] = surveys[0].questions[pref.title];
@@ -51,7 +49,6 @@ export const EditSurveyForm = ({ userId, surveyId }: { userId: string; surveyId:
         if ("Additional Questions" in surveys[0].questions) {
           rentalInfo["Additional Questions-option"] = surveys[0].questions["Additional Questions"].split(",");
         }
-        console.log(rentalInfo);
         setInitialValueObj(rentalInfo);
       } else {
         setSurvey(null);
@@ -89,7 +86,6 @@ export const EditSurveyForm = ({ userId, surveyId }: { userId: string; surveyId:
       const q = values[question.title];
       const a = values[`${question.title}-option`] || null;
       if (q) {
-        console.log(a);
         questions[question.title] = question.opts && a != null ? question.opts[Number(a)] : a;
       }
     });
@@ -97,15 +93,6 @@ export const EditSurveyForm = ({ userId, surveyId }: { userId: string; surveyId:
     if (values["Additional Questions"]) {
       questions["Additional Questions"] = values[`Additional Questions-option`].join(",") || null;
     }
-
-    console.log({
-      place_info,
-      questions,
-      responses: [],
-      user_id: userId,
-      created_at: new Date(),
-      public: values.public,
-    });
 
     try {
       await updateDoc(doc(firestore, "surveys", surveyId), {
@@ -128,10 +115,8 @@ export const EditSurveyForm = ({ userId, surveyId }: { userId: string; surveyId:
           WOOHOO!
         </Typography.Title>
         <Typography.Text>Your survey has been updated! Share it with potential candidates using this link:</Typography.Text>
-        <Typography.Title className="Hero" style={{ fontWeight: 500, marginTop: 0, fontSize: 30 }}>
-          <Link href="" onClick={() => router.push(`/survey/${status.split(":")[1]}`)} target="_blank">
-            roommate-easy.web.app/survey/{status.split(":")[1]}
-          </Link>
+        <Typography.Title className="Hero" style={{ cursor: "pointer", fontWeight: 500, marginTop: 0, fontSize: 30, color: "#1D6FFF" }} onClick={() => router.push(`/survey/${status.split(":")[1]}`)}>
+          roommate-easy.web.app/survey/{status.split(":")[1]}
         </Typography.Title>
       </Modal>
       <Typography.Title className="Hero" style={{ fontWeight: 700 }}>
