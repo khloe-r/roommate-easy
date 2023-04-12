@@ -29,7 +29,6 @@ export const CreateSurveyForm = ({ userId }: { userId: string }) => {
 
   const onSubmit = useCallback(async (values: any) => {
     setLoading(true);
-    console.log(values);
     const place_info = {
       address: values.address,
       roommates: values.roommates,
