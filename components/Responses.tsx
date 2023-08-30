@@ -47,7 +47,7 @@ const Responses = ({ responses, answerKey }: { responses: string[]; answerKey: {
       return {
         ...response,
         answers: answers,
-        score: score.green / (score.red + score.green),
+        score: score.red + score.green === 0 ? 1 : score.green / (score.red + score.green),
       };
     });
     setFormattedData(newData as ResponseType[]);

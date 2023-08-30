@@ -15,5 +15,32 @@
     "ui": {
       "enabled": true
     }
+  },
+  "hosting": {
+    "public": "out",
+    "cleanUrls": true,
+    "rewrites": [
+      {
+        "source": "/edit-survey/**",
+        "destination": "/edit-survey/[id].html"
+      },
+      {
+        "source": "/results/**",
+        "destination": "/results/[id].html"
+      },
+      {
+        "source": "/survey/**",
+        "destination": "/survey/[id].html"
+      },
+      {
+        "source": "**",
+        "dynamicLinks": true
+      }
+    ],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
   }
 }

@@ -159,14 +159,24 @@ export const EditSurveyForm = ({ userId, surveyId }: { userId: string; surveyId:
             <Space key={index} direction="vertical">
               <Space align="baseline">
                 <Form.Item name={preference.title} valuePropName="checked" style={{ marginBottom: "10px" }}>
-                  <Switch />
+                  <Switch
+                    onChange={(checked: boolean) => {
+                      if (!checked) form.setFieldValue(preference.title + "-option", undefined);
+                    }}
+                  />
                 </Form.Item>
                 {preference.title}
               </Space>
               {preference.description && <Typography.Text>{preference.description}</Typography.Text>}
+              <Button onClick={() => form.setFieldValue(preference.title + "-option", undefined)}>Reset Preferences</Button>
+
               <Form.Item name={`${preference.title}-option`}>
                 {preference.opts ? (
-                  <Radio.Group>
+                  <Radio.Group
+                    onChange={() => {
+                      if (!form.getFieldValue(preference.title)) form.setFieldValue(preference.title + "-option", undefined);
+                    }}
+                  >
                     <Space direction="vertical">
                       {preference.opts.map((opt, index) => (
                         <Radio key={index} value={index}>

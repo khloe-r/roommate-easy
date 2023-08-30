@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && next export",
     "start": "next start",
     "lint": "next lint"
   },
@@ -17,8 +17,8 @@
     "antd": "^5.2.0",
     "eslint": "8.33.0",
     "eslint-config-next": "13.1.6",
-    "firebase": "^9.17.1",
-    "firebase-tools": "^11.22.0",
+    "firebase": "^9.19.1",
+    "firebase-tools": "^11.26.0",
     "next": "13.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",

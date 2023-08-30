@@ -7,7 +7,7 @@ export const preferenceInfo = [
     { formattedTitle: "Please select which best describes how often you have guests over",title: "Guests", opts: ["I won’t usually have guests over", "I sometimes will have guests over in my space", "I sometimes want guests over in the shared living space", "I sometimes want guests over in my own space and the shared living space"] },
     { formattedTitle: "Please select which best describes how often you cook", title: "Cooking", opts: ["I cook almost every day", "I sometimes cook and sometimes buy food", "I buy food almost every day"] },
     { formattedTitle: "Please select which best describes your preferences arond pets", title: "Pets", opts: ["Yes, I have pets", "No, I don't have pets and don't want pets in the unit", "No, I don't have pets but are okay with pets in the unit"] },
-    { formattedTitle: "Please select which best describes how often you may have a partner over", title: "Relationship", opts: ["Yes, I have a partner who will visit often", "Yes, I have a partner who will visit occaisionally", "No, I don't have a partner who will be visiting"] },
+    { formattedTitle: "Please select which best describes how often you may have a partner over", title: "Relationship", opts: ["Yes, I have a partner who will visit often", "Yes, I have a partner who will visit occasionally", "No, I don't have a partner who will be visiting"] },
     { formattedTitle: "Please select which best describes your sleeping habits", title: "Sleeping Habits", opts: ["I usually sleep before 10 pm", "I usually sleep between 10 pm and 2 am", "I usually sleep after 2 am"] },
     // { title: "Additional Questions", formType: "textarea", description: "Enter any additional questions separated by commas you would like included" },
 ];
